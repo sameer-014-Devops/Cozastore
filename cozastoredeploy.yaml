@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skmirza-cozastore-deploy
+  labels:
+    app: skmirza-cozastore-deploy-lb01
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: skmirza-cozastore-app
+  template:
+    metadata:
+      labels:
+        app: skmirza-cozastore-app
+    spec:
+      containers:
+      - name: skmirza-cozastore-container
+        image: sameer014/skmirza-cozastore-img:latest
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 8084
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: skmirza-cozastore-np-service
+  labels:
+    app: skmirza-cozastore-np-app
+spec:
+  selector:
+    app: skmirza-cozastore-app
+
+  type: NodePort
+  ports:
+  - nodePort: 30018
+    port: 8084
+    targetPort: 8084
